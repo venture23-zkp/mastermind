@@ -78,7 +78,7 @@ program mastermind.aleo {
             blows: 0u8
         };
 
-        return (new_secret, offer_move);
+        return (new_secret, accept_move);
     }
 
     transition start_game(my_secret: secret, accept_move: move, first_guess: u8, second_guess: u8, third_guess: u8, fourth_guess: u8) -> (secret, move) {
@@ -99,7 +99,7 @@ program mastermind.aleo {
         };
 
         let start_move: move = move {
-            owner: accept_move.player_1,
+            owner: accept_move.player_2,
             gates: 0u64,
             player_1: accept_move.player_1,
             player_2: accept_move.player_2,

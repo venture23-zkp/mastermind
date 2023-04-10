@@ -42,7 +42,7 @@ function accept_game:
     cast self.caller 0u64 r0 r1 r2 r3 r4.player_1 true into r5 as secret.record;
     cast r4.player_1 0u64 r4.player_1 self.caller 0u8 0u8 0u8 0u8 0u8 0u8 into r6 as move.record;
     output r5 as secret.record;
-    output r4 as move.record;
+    output r6 as move.record;
 
 function start_game:
     input r0 as secret.record;
@@ -55,7 +55,7 @@ function start_game:
     assert.eq r0.opponent r1.player_2;
     assert.neq r1.player_1 r1.player_2;
     cast self.caller 0u64 r0.first r0.second r0.third r0.fourth r1.player_2 true into r6 as secret.record;
-    cast r1.player_1 0u64 r1.player_1 r1.player_2 r2 r3 r4 r5 0u8 0u8 into r7 as move.record;
+    cast r1.player_2 0u64 r1.player_1 r1.player_2 r2 r3 r4 r5 0u8 0u8 into r7 as move.record;
     output r6 as secret.record;
     output r7 as move.record;
 
