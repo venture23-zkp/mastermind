@@ -1,4 +1,4 @@
-#!/bin/bash
+
 # First check that Leo is installed.
 if ! command -v leo &> /dev/null
 then
@@ -8,6 +8,9 @@ fi
 
 # Follow along in the README.md for a detailed explanation of each step.
 
+P1_SECRET='{first: 1u8, second: 2u8, third: 3u8, blinding_factor: 1field}' 
+P2_SECRET='{first: 0u8, second: 4u8, third: 3u8, blinding_factor: 1field}' 
+
 echo "
 ###############################################################################
 ########                                                               ########
@@ -16,7 +19,7 @@ echo "
 ###############################################################################
 "
 echo "{
-  \"program\": \"mastermind.aleo\",
+  \"program\": \"mastermindI.aleo\",
   \"version\": \"0.0.0\",
   \"description\": \"\",
   \"development\": {
@@ -27,36 +30,11 @@ echo "{
   \"license\": \"MIT\"
 }" > program.json
 
-leo run offer_game 1u8 1u8 1u8 1u8 aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry
+
+# leo run offer_game 1field '{first: 1u8, second: 2u8, third: 3u8, blinding_factor: 1field}' aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry
+leo run offer_game 1field "${P1_SECRET}" aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry
 echo "
 ✅ Successfully offered game to Player 2."
-
-# ➡️  Outputs
-
-#  • {
-#   owner: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-#   gates: 0u64.private,
-#   first: 1u8.private,
-#   second: 1u8.private,
-#   third: 1u8.private,
-#   fourth: 1u8.private,
-#   opponent: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-#   game_started: false.private,
-#   _nonce: 5624583346723341206072874082179292434877103367679538456659849909205856100551group.public
-# }
-#  • {
-#   owner: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-#   gates: 0u64.private,
-#   player_1: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-#   player_2: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-#   first_guess: 0u8.private,
-#   second_guess: 0u8.private,
-#   third_guess: 0u8.private,
-#   fourth_guess: 0u8.private,
-#   hits: 0u8.private,
-#   blows: 0u8.private,
-#   _nonce: 93365508995123373653560929585509199651315961415610069179259121093085594948group.public
-# }
 
 echo "
 ###############################################################################
@@ -67,7 +45,7 @@ echo "
 "
 (
   echo "{
-    \"program\": \"mastermind.aleo\",
+    \"program\": \"mastermindI.aleo\",
     \"version\": \"0.0.0\",
     \"description\": \"\",
     \"development\": {
@@ -79,47 +57,31 @@ echo "
   }" > program.json
 )
 
-leo run accept_game 2u8 2u8 2u8 2u8  '{
+leo run accept_game '{
   owner: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
   gates: 0u64.private,
-  player_1: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-  player_2: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-  first_guess: 0u8.private,
-  second_guess: 0u8.private,
-  third_guess: 0u8.private,
-  fourth_guess: 0u8.private,
+  game: {
+    id: 1field.private,
+    started: false.private,
+    finished: false.private
+  },
+  player_1: {
+    addr: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
+    secret_hash: 4150411142742965853031818295656888588698558427018459831715669006349479301277field.private
+  },
+  player_2: {
+    addr: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
+    secret_hash: 4150411142742965853031818295656888588698558427018459831715669006349479301277field.private
+  },
+  guess: {
+    first: 5u8.private,
+    second: 5u8.private,
+    third: 5u8.private
+  },
   hits: 0u8.private,
   blows: 0u8.private,
-  _nonce: 4543595979323260588863872986883490867199425290780589981546381751679071088350group.public
-}'
-echo "
-✅ Successfully accepted game by Player 2."
-
-# Outputs
-#  • {
-#   owner: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-#   gates: 0u64.private,
-#   first: 2u8.private,
-#   second: 2u8.private,
-#   third: 2u8.private,
-#   fourth: 2u8.private,
-#   opponent: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-#   game_started: true.private,
-#   _nonce: 1950369996900848819814366571733164109314560868636410071976472994761288656494group.public
-# }
-#  • {
-#   owner: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-#   gates: 0u64.private,
-#   player_1: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-#   player_2: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-#   first_guess: 0u8.private,
-#   second_guess: 0u8.private,
-#   third_guess: 0u8.private,
-#   fourth_guess: 0u8.private,
-#   hits: 0u8.private,
-#   blows: 0u8.private,
-#   _nonce: 565893079494208453276353669213481425143141010668720104239563007465780376962group.public
-# }
+  _nonce: 4304234582584161222006203195424646986785902330183375426776730527878554918531group.public
+}' "${P2_SECRET}" 
 
 # 3: 
 echo "
@@ -131,7 +93,7 @@ echo "
 "
 
 echo "{
-  \"program\": \"mastermind.aleo\",
+  \"program\": \"mastermindI.aleo\",
   \"version\": \"0.0.0\",
   \"description\": \"\",
   \"development\": {
@@ -142,68 +104,44 @@ echo "{
   \"license\": \"MIT\"
 }" > program.json
 
+P1_FIRST_GUESS='{first: 1u8, second: 2u8, third: 3u8}'
 leo run start_game '{
   owner: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
   gates: 0u64.private,
-  first: 1u8.private,
-  second: 1u8.private,
-  third: 1u8.private,
-  fourth: 1u8.private,
-  opponent: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-  game_started: false.private,
-  _nonce: 5624583346723341206072874082179292434877103367679538456659849909205856100551group.public
-}' '{
-  owner: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-  gates: 0u64.private,
-  player_1: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-  player_2: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-  first_guess: 0u8.private,
-  second_guess: 0u8.private,
-  third_guess: 0u8.private,
-  fourth_guess: 0u8.private,
+  game: {
+    id: 1field.private,
+    started: false.private,
+    finished: false.private
+  },
+  player_1: {
+    addr: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
+    secret_hash: 4150411142742965853031818295656888588698558427018459831715669006349479301277field.private
+  },
+  player_2: {
+    addr: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
+    secret_hash: 7408027298759572436229032800668706857653653501832695599177141981492741491812field.private
+  },
+  guess: {
+    first: 5u8.private,
+    second: 5u8.private,
+    third: 5u8.private
+  },
   hits: 0u8.private,
   blows: 0u8.private,
-  _nonce: 565893079494208453276353669213481425143141010668720104239563007465780376962group.public
-}' 1u8 2u8 3u8 4u8
-
-# ➡️  Outputs
-
-#  • {
-#   owner: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-#   gates: 0u64.private,
-#   first: 1u8.private,
-#   second: 1u8.private,
-#   third: 1u8.private,
-#   fourth: 1u8.private,
-#   opponent: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-#   game_started: true.private,
-#   _nonce: 219973862463187739090360824152788226790560497439569710185986962483561304161group.public
-# }
-#  • {
-#   owner: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-#   gates: 0u64.private,
-#   player_1: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-#   player_2: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-#   first_guess: 1u8.private,
-#   second_guess: 2u8.private,
-#   third_guess: 3u8.private,
-#   fourth_guess: 4u8.private,
-#   hits: 0u8.private,
-#   blows: 0u8.private,
-#   _nonce: 962846019303673287743144493974234715238574087657253014548054142989626868661group.public
-# }
+  _nonce: 187399225973057883148804049741506250315462706455897819382681563165650211777group.public
+}' '${P1_FIRST_GUESS}'
 
 
 echo "
 ###############################################################################
 ########                                                               ########
-########      STEP 2: P2 process P1 guess and makes own guess          ########
+########      STEP 4: P2 process P1 guess and makes own guess          ########
 ########                                                               ########
 ###############################################################################
 "
 (
   echo "{
-    \"program\": \"mastermind.aleo\",
+    \"program\": \"mastermindI.aleo\",
     \"version\": \"0.0.0\",
     \"description\": \"\",
     \"development\": {
@@ -215,29 +153,32 @@ echo "
   }" > program.json
 )
 
+P2_FIRST_GUESS='{first: 1u8, second: 2u8, third: 3u8}'
 leo run play '{
   owner: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
   gates: 0u64.private,
-  player_1: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-  player_2: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-  first_guess: 1u8.private,
-  second_guess: 2u8.private,
-  third_guess: 3u8.private,
-  fourth_guess: 4u8.private,
+  game: {
+    id: 1field.private,
+    started: true.private,
+    finished: false.private
+  },
+  player_1: {
+    addr: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
+    secret_hash: 4150411142742965853031818295656888588698558427018459831715669006349479301277field.private
+  },
+  player_2: {
+    addr: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
+    secret_hash: 7408027298759572436229032800668706857653653501832695599177141981492741491812field.private
+  },
+  guess: {
+    first: 1u8.private,
+    second: 2u8.private,
+    third: 3u8.private
+  },
   hits: 0u8.private,
   blows: 0u8.private,
-  _nonce: 5943239244508193061445223177014442598152417263283932873329593873721165511261group.public
-}' '{
-  owner: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-  gates: 0u64.private,
-  first: 2u8.private,
-  second: 2u8.private,
-  third: 2u8.private,
-  fourth: 2u8.private,
-  opponent: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-  game_started: true.private,
-  _nonce: 1950369996900848819814366571733164109314560868636410071976472994761288656494group.public
-}' 1u8 2u8 3u8 4u8
+  _nonce: 8149421582681812140272606675585073498037110677768117426632245107863646891256group.public
+}' "${P2_SECRET}" "${P2_FIRST_GUESS}"
 
 
 echo "
@@ -249,7 +190,7 @@ echo "
 "
 
 echo "{
-  \"program\": \"mastermind.aleo\",
+  \"program\": \"mastermindI.aleo\",
   \"version\": \"0.0.0\",
   \"description\": \"\",
   \"development\": {
@@ -260,26 +201,29 @@ echo "{
   \"license\": \"MIT\"
 }" > program.json
 
+P1_SECOND_GUESS='{first: 1u8, second: 2u8, third: 3u8}'
 leo run play '{
   owner: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
   gates: 0u64.private,
-  player_1: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-  player_2: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-  first_guess: 1u8.private,
-  second_guess: 2u8.private,
-  third_guess: 3u8.private,
-  fourth_guess: 4u8.private,
+  game: {
+    id: 1field.private,
+    started: true.private,
+    finished: false.private
+  },
+  player_1: {
+    addr: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
+    secret_hash: 7408027298759572436229032800668706857653653501832695599177141981492741491812field.private
+  },
+  player_2: {
+    addr: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
+    secret_hash: 4150411142742965853031818295656888588698558427018459831715669006349479301277field.private
+  },
+  guess: {
+    first: 1u8.private,
+    second: 2u8.private,
+    third: 3u8.private
+  },
   hits: 1u8.private,
-  blows: 1u8.private,
-  _nonce: 6129908657243639195443441174134187228343973122836747396753633348100386927986group.public
-}' '{
-  owner: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
-  gates: 0u64.private,
-  first: 1u8.private,
-  second: 1u8.private,
-  third: 1u8.private,
-  fourth: 1u8.private,
-  opponent: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
-  game_started: true.private,
-  _nonce: 219973862463187739090360824152788226790560497439569710185986962483561304161group.public
-}' 1u8 2u8 3u8 4u8
+  blows: 0u8.private,
+  _nonce: 6582567456528561440640155374621523804008146339198881355721086796346177531539group.public
+}' "${P1_SECRET}"  "${P1_SECOND_GUESS}"
