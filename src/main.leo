@@ -1,5 +1,5 @@
 // The 'mastermind' program.
-program mastermindI.aleo {
+program mastermindII.aleo {
 
     struct secret {
         first: u8,
@@ -38,7 +38,7 @@ program mastermindI.aleo {
 
     mapping games: field => u8;
 
-    transition offer_game(game_id: field, new_secret: secret, opponent: address) -> move {
+    transition offer_game(game_id: field, first: u8, second: u8, third: u8, blinding_factor: field, opponent: address) -> move {
 
         // let firstLessThanFive: bool = first < 5u8;
         // assert(firstLessThanFive);
@@ -47,8 +47,8 @@ program mastermindI.aleo {
         // let thirdLessThanFive: bool = third < 5u8;
         // assert(secondLessThanFive);
 
-        assert(new_secret.first < 5u8 && new_secret.second < 5u8 && new_secret.third < 5u8);
-        assert(new_secret.first != new_secret.second && new_secret.second != new_secret.third && new_secret.third != new_secret.first);
+        assert(first < 5u8 && second < 5u8 && third < 5u8);
+        assert(first != second && second != third && third != first);
         
         let starting_guess: guess = guess {
             first: 5u8,
@@ -60,6 +60,13 @@ program mastermindI.aleo {
             id: game_id,
             started: false,
             finished: false
+        };
+
+        let new_secret: secret = secret {
+            first,
+            second,
+            third,
+            blinding_factor
         };
 
         let player_1: player = player {
@@ -85,12 +92,19 @@ program mastermindI.aleo {
         increment(games, game_id, 255u8);
     }
 
-    transition accept_game(offer_move: move, new_secret: secret) -> move {
+    transition accept_game(offer_move: move, first: u8, second: u8, third: u8, blinding_factor: field) -> move {
 
         assert( !offer_move.game.started );
 
-        assert(new_secret.first < 5u8 && new_secret.second < 5u8 && new_secret.third < 5u8);
-        assert(new_secret.first != new_secret.second && new_secret.second != new_secret.third && new_secret.third != new_secret.first);
+        assert(first < 5u8 && second < 5u8 && third < 5u8);
+        assert(first != second && second != third && third != first);
+
+        let new_secret: secret = secret {
+            first,
+            second,
+            third,
+            blinding_factor
+        };
         
         let player_2: player = player {
             addr: self.caller,
@@ -111,7 +125,7 @@ program mastermindI.aleo {
         return accept_move;
     }
 
-    transition start_game(accept_move: move, my_guess: guess) -> move {
+    transition start_game(accept_move: move, first_guess: u8, second_guess: u8, third_guess: u8) -> move {
         assert(!accept_move.game.started);
         assert_neq(accept_move.player_1.addr, accept_move.player_2.addr);
 
@@ -119,6 +133,12 @@ program mastermindI.aleo {
             id: accept_move.game.id,
             started: true,
             finished: false
+        };
+
+        let my_guess: guess = guess {
+            first: first_guess,
+            second: second_guess,
+            third: third_guess
         };
 
         let start_move: move = move {
@@ -163,10 +183,23 @@ program mastermindI.aleo {
         return blows;
     }
 
-    transition play(opponent_move: move, my_secret: secret, my_guess: guess) -> move {
+    transition play(opponent_move: move, first_secret: u8, second_secret: u8, third_secret: u8, blinding_factor: field, first_guess: u8, second_guess: u8, third_guess: u8) -> move {
         assert(opponent_move.game.started);
 
+        let my_secret: secret = secret {
+            first: first_secret,
+            second: second_secret,
+            third: third_secret,
+            blinding_factor: blinding_factor
+        };
+
         assert_eq(opponent_move.player_2.secret_hash, BHP256::hash(my_secret));
+
+        let my_guess: guess = guess {
+            first: first_guess,
+            second: second_guess,
+            third: third_guess
+        };
 
         let hits: u8 = calculate_hits(opponent_move.guess, my_secret);
         let blows: u8 = calculate_blows(opponent_move.guess, my_secret);

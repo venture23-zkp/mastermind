@@ -1,4 +1,4 @@
-program mastermindI.aleo;
+program mastermindII.aleo;
 
 struct secret:
     first as u8;
@@ -35,26 +35,30 @@ mapping games:
 	value right as u8.public;
 function offer_game:
     input r0 as field.private;
-    input r1 as secret.private;
-    input r2 as address.private;
-    lt r1.first 5u8 into r3;
-    lt r1.second 5u8 into r4;
-    and r3 r4 into r5;
-    lt r1.third 5u8 into r6;
-    and r5 r6 into r7;
-    assert.eq r7 true;
-    is.neq r1.first r1.second into r8;
-    is.neq r1.second r1.third into r9;
+    input r1 as u8.private;
+    input r2 as u8.private;
+    input r3 as u8.private;
+    input r4 as field.private;
+    input r5 as address.private;
+    lt r1 5u8 into r6;
+    lt r2 5u8 into r7;
+    and r6 r7 into r8;
+    lt r3 5u8 into r9;
     and r8 r9 into r10;
-    is.neq r1.third r1.first into r11;
-    and r10 r11 into r12;
-    assert.eq r12 true;
-    cast 5u8 5u8 5u8 into r13 as guess;
-    cast r0 false false into r14 as game;
-    hash.bhp256 r1 into r15;
-    cast self.caller r15 into r16 as player;
-    cast r2 0u64 r14 r16 r16 r13 0u8 0u8 into r17 as move.record;
-    output r17 as move.record;
+    assert.eq r10 true;
+    is.neq r1 r2 into r11;
+    is.neq r2 r3 into r12;
+    and r11 r12 into r13;
+    is.neq r3 r1 into r14;
+    and r13 r14 into r15;
+    assert.eq r15 true;
+    cast 5u8 5u8 5u8 into r16 as guess;
+    cast r0 false false into r17 as game;
+    cast r1 r2 r3 r4 into r18 as secret;
+    hash.bhp256 r18 into r19;
+    cast self.caller r19 into r20 as player;
+    cast r5 0u64 r17 r20 r20 r16 0u8 0u8 into r21 as move.record;
+    output r21 as move.record;
 
     finalize r0;
 
@@ -64,35 +68,42 @@ finalize offer_game:
 
 function accept_game:
     input r0 as move.record;
-    input r1 as secret.private;
-    not r0.game.started into r2;
-    assert.eq r2 true;
-    lt r1.first 5u8 into r3;
-    lt r1.second 5u8 into r4;
-    and r3 r4 into r5;
-    lt r1.third 5u8 into r6;
-    and r5 r6 into r7;
-    assert.eq r7 true;
-    is.neq r1.first r1.second into r8;
-    is.neq r1.second r1.third into r9;
+    input r1 as u8.private;
+    input r2 as u8.private;
+    input r3 as u8.private;
+    input r4 as field.private;
+    not r0.game.started into r5;
+    assert.eq r5 true;
+    lt r1 5u8 into r6;
+    lt r2 5u8 into r7;
+    and r6 r7 into r8;
+    lt r3 5u8 into r9;
     and r8 r9 into r10;
-    is.neq r1.third r1.first into r11;
-    and r10 r11 into r12;
-    assert.eq r12 true;
-    hash.bhp256 r1 into r13;
-    cast self.caller r13 into r14 as player;
-    cast r0.player_1.addr 0u64 r0.game r0.player_1 r14 r0.guess 0u8 0u8 into r15 as move.record;
-    output r15 as move.record;
+    assert.eq r10 true;
+    is.neq r1 r2 into r11;
+    is.neq r2 r3 into r12;
+    and r11 r12 into r13;
+    is.neq r3 r1 into r14;
+    and r13 r14 into r15;
+    assert.eq r15 true;
+    cast r1 r2 r3 r4 into r16 as secret;
+    hash.bhp256 r16 into r17;
+    cast self.caller r17 into r18 as player;
+    cast r0.player_1.addr 0u64 r0.game r0.player_1 r18 r0.guess 0u8 0u8 into r19 as move.record;
+    output r19 as move.record;
 
 function start_game:
     input r0 as move.record;
-    input r1 as guess.private;
-    not r0.game.started into r2;
-    assert.eq r2 true;
+    input r1 as u8.private;
+    input r2 as u8.private;
+    input r3 as u8.private;
+    not r0.game.started into r4;
+    assert.eq r4 true;
     assert.neq r0.player_1.addr r0.player_2.addr;
-    cast r0.game.id true false into r3 as game;
-    cast r0.player_2.addr 0u64 r3 r0.player_1 r0.player_2 r1 0u8 0u8 into r4 as move.record;
-    output r4 as move.record;
+    cast r0.game.id true false into r5 as game;
+    cast r1 r2 r3 into r6 as guess;
+    cast r0.player_2.addr 0u64 r5 r0.player_1 r0.player_2 r6 0u8 0u8 into r7 as move.record;
+    output r7 as move.record;
 
 closure calculate_hits:
     input r0 as guess;
@@ -130,12 +141,19 @@ closure calculate_blows:
 
 function play:
     input r0 as move.record;
-    input r1 as secret.private;
-    input r2 as guess.private;
+    input r1 as u8.private;
+    input r2 as u8.private;
+    input r3 as u8.private;
+    input r4 as field.private;
+    input r5 as u8.private;
+    input r6 as u8.private;
+    input r7 as u8.private;
     assert.eq r0.game.started true;
-    hash.bhp256 r1 into r3;
-    assert.eq r0.player_2.secret_hash r3;
-    call calculate_hits r0.guess r1 into r4;
-    call calculate_blows r0.guess r1 into r5;
-    cast r0.player_1.addr 0u64 r0.game r0.player_2 r0.player_1 r2 r4 r5 into r6 as move.record;
-    output r6 as move.record;
+    cast r1 r2 r3 r4 into r8 as secret;
+    hash.bhp256 r8 into r9;
+    assert.eq r0.player_2.secret_hash r9;
+    cast r5 r6 r7 into r10 as guess;
+    call calculate_hits r0.guess r8 into r11;
+    call calculate_blows r0.guess r8 into r12;
+    cast r0.player_1.addr 0u64 r0.game r0.player_2 r0.player_1 r10 r11 r12 into r13 as move.record;
+    output r13 as move.record;

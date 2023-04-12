@@ -19,7 +19,7 @@ echo "
 ###############################################################################
 "
 echo "{
-  \"program\": \"mastermindI.aleo\",
+  \"program\": \"mastermindII.aleo\",
   \"version\": \"0.0.0\",
   \"description\": \"\",
   \"development\": {
@@ -32,7 +32,7 @@ echo "{
 
 
 # leo run offer_game 1field '{first: 1u8, second: 2u8, third: 3u8, blinding_factor: 1field}' aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry
-leo run offer_game 1field "${P1_SECRET}" aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry
+leo run offer_game 1field 1u8 2u8 3u8 1field aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry
 echo "
 ✅ Successfully offered game to Player 2."
 
@@ -45,7 +45,7 @@ echo "
 "
 (
   echo "{
-    \"program\": \"mastermindI.aleo\",
+    \"program\": \"mastermindII.aleo\",
     \"version\": \"0.0.0\",
     \"description\": \"\",
     \"development\": {
@@ -81,7 +81,7 @@ leo run accept_game '{
   hits: 0u8.private,
   blows: 0u8.private,
   _nonce: 4304234582584161222006203195424646986785902330183375426776730527878554918531group.public
-}' "${P2_SECRET}" 
+}' 0u8 4u8 3u8 1field
 
 # 3: 
 echo "
@@ -93,7 +93,7 @@ echo "
 "
 
 echo "{
-  \"program\": \"mastermindI.aleo\",
+  \"program\": \"mastermindII.aleo\",
   \"version\": \"0.0.0\",
   \"description\": \"\",
   \"development\": {
@@ -129,7 +129,7 @@ leo run start_game '{
   hits: 0u8.private,
   blows: 0u8.private,
   _nonce: 187399225973057883148804049741506250315462706455897819382681563165650211777group.public
-}' '${P1_FIRST_GUESS}'
+}' 1u8 2u8 3u8
 
 
 echo "
@@ -141,7 +141,7 @@ echo "
 "
 (
   echo "{
-    \"program\": \"mastermindI.aleo\",
+    \"program\": \"mastermindII.aleo\",
     \"version\": \"0.0.0\",
     \"description\": \"\",
     \"development\": {
@@ -178,7 +178,7 @@ leo run play '{
   hits: 0u8.private,
   blows: 0u8.private,
   _nonce: 8149421582681812140272606675585073498037110677768117426632245107863646891256group.public
-}' "${P2_SECRET}" "${P2_FIRST_GUESS}"
+}' 0u8 4u8 3u8 1field 1u8 2u8 3u8
 
 
 echo "
@@ -190,7 +190,7 @@ echo "
 "
 
 echo "{
-  \"program\": \"mastermindI.aleo\",
+  \"program\": \"mastermindII.aleo\",
   \"version\": \"0.0.0\",
   \"description\": \"\",
   \"development\": {
@@ -226,4 +226,4 @@ leo run play '{
   hits: 1u8.private,
   blows: 0u8.private,
   _nonce: 6582567456528561440640155374621523804008146339198881355721086796346177531539group.public
-}' "${P1_SECRET}"  "${P1_SECOND_GUESS}"
+}' 1u8 2u8 3u8 1field 1u8 2u8 3u8
