@@ -6,57 +6,67 @@ then
     exit
 fi
 
-# Follow along in the README.md for a detailed explanation of each step.
+P1_ADDR=aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy
+P1_VIEW_KEY=AViewKey1fSyEPXxfPFVgjL6qcM9izWRGrhSHKXyN3c64BNsAjnA6
+P1_PRIVATE_KEY=APrivateKey1zkpGKaJY47BXb6knSqmT3JZnBUEGBDFAWz2nMVSsjwYpJmm
+
+P2_ADDR=aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry
+P2_VIEW_KEY=AViewKey1hh6dvSEgeMdfseP4hfdbNYjX4grETwCuTbKnCftkpMwE
+P2_PRIVATE_KEY=APrivateKey1zkp86FNGdKxjgAdgQZ967bqBanjuHkAaoRe19RK24ZCGsHH
 
 P1_SECRET='{first: 1u8, second: 2u8, third: 3u8, blinding_factor: 1field}' 
 P2_SECRET='{first: 0u8, second: 4u8, third: 3u8, blinding_factor: 1field}' 
 
-echo "
-###############################################################################
-########                                                               ########
-########         STEP 1: P1 creates game and offers to P2              ########
-########                                                               ########
-###############################################################################
-"
-echo "{
-  \"program\": \"mastermindI.aleo\",
-  \"version\": \"0.0.0\",
-  \"description\": \"\",
-  \"development\": {
-      \"private_key\": \"APrivateKey1zkpGKaJY47BXb6knSqmT3JZnBUEGBDFAWz2nMVSsjwYpJmm\",
-      \"view_key\": \"AViewKey1fSyEPXxfPFVgjL6qcM9izWRGrhSHKXyN3c64BNsAjnA6\",
-      \"address\": \"aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy\"
-  },
-  \"license\": \"MIT\"
-}" > program.json
+GAME_ID='1field'
 
-
-# leo run offer_game 1field '{first: 1u8, second: 2u8, third: 3u8, blinding_factor: 1field}' aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry
-leo run offer_game 1field "${P1_SECRET}" aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry
-echo "
-✅ Successfully offered game to Player 2."
-
-echo "
-###############################################################################
-########                                                               ########
-########           STEP 2: P2 accepts the game                         ########
-########                                                               ########
-###############################################################################
-"
-(
+load_P1() {
   echo "{
     \"program\": \"mastermindI.aleo\",
     \"version\": \"0.0.0\",
     \"description\": \"\",
     \"development\": {
-        \"private_key\": \"APrivateKey1zkp86FNGdKxjgAdgQZ967bqBanjuHkAaoRe19RK24ZCGsHH\",
-        \"view_key\": \"AViewKey1hh6dvSEgeMdfseP4hfdbNYjX4grETwCuTbKnCftkpMwE\",
-        \"address\": \"aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry\"
+        \"private_key\": \"${P1_PRIVATE_KEY}\",
+        \"view_key\": \"${P1_VIEW_KEY}\",
+        \"address\": \"${P1_ADDR}\"
     },
     \"license\": \"MIT\"
   }" > program.json
-)
+}
 
+load_P2() {
+  echo "{
+    \"program\": \"mastermindI.aleo\",
+    \"version\": \"0.0.0\",
+    \"description\": \"\",
+    \"development\": {
+        \"private_key\": \"${P2_PRIVATE_KEY}\",
+        \"view_key\": \"${P2_VIEW_KEY}\",
+        \"address\": \"${P2_ADDR}\"
+    },
+    \"license\": \"MIT\"
+  }" > program.json
+}
+
+#########################################################
+
+echo "STEP 1: P1 creates a game and offers to P2
+"
+load_P1
+leo run offer_game "${GAME_ID}" "${P1_SECRET}" "${P2_ADDR}" > outputs/offer_game.move
+
+echo "
+✅ Success: Game Offered. Game Status:
+###############################################################################
+########                                                               ########
+########         SECRETS:: P1: 1-2-3                                   ########
+########                                                               ########
+###############################################################################
+"
+
+#########################################################
+
+echo " STEP 2: P2 accepts the game "
+load_P2
 leo run accept_game '{
   owner: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
   gates: 0u64.private,
@@ -81,29 +91,22 @@ leo run accept_game '{
   hits: 0u8.private,
   blows: 0u8.private,
   _nonce: 4304234582584161222006203195424646986785902330183375426776730527878554918531group.public
-}' "${P2_SECRET}" 
+}' "${P2_SECRET}" > outputs/accept_game.move
 
-# 3: 
 echo "
+✅ Success: Game Accepted. Game Status:
 ###############################################################################
 ########                                                               ########
-########         STEP 3: Player 1 Starts The Game                      ########
+########         SECRETS:: P1: 1-2-3                                   ########
+########                   P2: 0-4-3                                   ########
 ########                                                               ########
 ###############################################################################
 "
 
-echo "{
-  \"program\": \"mastermindI.aleo\",
-  \"version\": \"0.0.0\",
-  \"description\": \"\",
-  \"development\": {
-      \"private_key\": \"APrivateKey1zkpGKaJY47BXb6knSqmT3JZnBUEGBDFAWz2nMVSsjwYpJmm\",
-      \"view_key\": \"AViewKey1fSyEPXxfPFVgjL6qcM9izWRGrhSHKXyN3c64BNsAjnA6\",
-      \"address\": \"aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy\"
-  },
-  \"license\": \"MIT\"
-}" > program.json
+#########################################################
 
+echo " STEP 3: P1 starts the game "
+load_P1
 P1_FIRST_GUESS='{first: 1u8, second: 2u8, third: 3u8}'
 leo run start_game '{
   owner: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
@@ -129,30 +132,24 @@ leo run start_game '{
   hits: 0u8.private,
   blows: 0u8.private,
   _nonce: 187399225973057883148804049741506250315462706455897819382681563165650211777group.public
-}' '${P1_FIRST_GUESS}'
-
+}' "${P1_FIRST_GUESS}" > outputs/start_game.move
 
 echo "
+✅ Success: Game Started. Game Status:
 ###############################################################################
 ########                                                               ########
-########      STEP 4: P2 process P1 guess and makes own guess          ########
+########         SECRETS:: P1: 1-2-3                                   ########
+########                   P2: 0-4-3                                   ########
+########                                                               ########
+########         GUESSES:: P1: 1-2-3                                   ########
 ########                                                               ########
 ###############################################################################
 "
-(
-  echo "{
-    \"program\": \"mastermindI.aleo\",
-    \"version\": \"0.0.0\",
-    \"description\": \"\",
-    \"development\": {
-        \"private_key\": \"APrivateKey1zkp86FNGdKxjgAdgQZ967bqBanjuHkAaoRe19RK24ZCGsHH\",
-        \"view_key\": \"AViewKey1hh6dvSEgeMdfseP4hfdbNYjX4grETwCuTbKnCftkpMwE\",
-        \"address\": \"aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry\"
-    },
-    \"license\": \"MIT\"
-  }" > program.json
-)
 
+#########################################################
+
+echo " STEP 4: P2 process P1 guess and makes own guess "
+load_P2
 P2_FIRST_GUESS='{first: 1u8, second: 2u8, third: 3u8}'
 leo run play '{
   owner: aleo1wyvu96dvv0auq9e4qme54kjuhzglyfcf576h0g3nrrmrmr0505pqd6wnry.private,
@@ -178,30 +175,27 @@ leo run play '{
   hits: 0u8.private,
   blows: 0u8.private,
   _nonce: 8149421582681812140272606675585073498037110677768117426632245107863646891256group.public
-}' "${P2_SECRET}" "${P2_FIRST_GUESS}"
-
+}' "${P2_SECRET}" "${P2_FIRST_GUESS}" > outputs/play1.move
 
 echo "
+✅ Success: Playing Game. Game Status
 ###############################################################################
 ########                                                               ########
-########         P1 process P2 guess and makes own guess               ########
+########         SECRETS:: P1: 1-2-3                                   ########
+########                   P2: 0-4-3                                   ########
+########                                                               ########
+########         GUESSES:: P1: 1-2-3 -> Hits:1 Blows:0                 ########
+########                                                               ########
+########                   P2: 1-2-3                                   ########
 ########                                                               ########
 ###############################################################################
 "
 
-echo "{
-  \"program\": \"mastermindI.aleo\",
-  \"version\": \"0.0.0\",
-  \"description\": \"\",
-  \"development\": {
-      \"private_key\": \"APrivateKey1zkpGKaJY47BXb6knSqmT3JZnBUEGBDFAWz2nMVSsjwYpJmm\",
-      \"view_key\": \"AViewKey1fSyEPXxfPFVgjL6qcM9izWRGrhSHKXyN3c64BNsAjnA6\",
-      \"address\": \"aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy\"
-  },
-  \"license\": \"MIT\"
-}" > program.json
+#########################################################
 
+echo " STEP 5: P1 process P2 guess and makes own guess "
 P1_SECOND_GUESS='{first: 1u8, second: 2u8, third: 3u8}'
+load_P1
 leo run play '{
   owner: aleo15g9c69urtdhvfml0vjl8px07txmxsy454urhgzk57szmcuttpqgq5cvcdy.private,
   gates: 0u64.private,
@@ -226,4 +220,18 @@ leo run play '{
   hits: 1u8.private,
   blows: 0u8.private,
   _nonce: 6582567456528561440640155374621523804008146339198881355721086796346177531539group.public
-}' "${P1_SECRET}"  "${P1_SECOND_GUESS}"
+}' "${P1_SECRET}"  "${P1_SECOND_GUESS}" > outputs/play2.move
+
+echo "
+✅ Success: Playing Game. Game Status:
+###############################################################################
+########                                                               ########
+########         SECRETS:: P1: 1-2-3                                   ########
+########                   P2: 0-4-3                                   ########
+########                                                               ########
+########         GUESSES:: P1: 1-2-3 -> Hits:1 Blows:0                 ########
+########                                                               ########
+########                   P2: 1-2-3 -> Hits:3 Blows:0                 ########
+########                                                               ########
+###############################################################################
+"
