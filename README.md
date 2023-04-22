@@ -337,8 +337,7 @@ Again, P2 makes the third guess and so on...
 
 ### 5. Who Wins?
 Play continues back and forth between Player 1 and Player 2.
-When one player has a total of 14 flipped bits in their `hits_and_misses` component on their `board_state` record,
-they have won the game.
+When one player has a total of 3 hits, they have won the game.
 
 ## Ensure that each player can only move once before the next player can move
 
