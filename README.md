@@ -1,7 +1,7 @@
 # Mastermind Game in Aleo
 
 # Summary
-MastermindI is a modified version of [classic mastermind game](https://en.wikipedia.org/wiki/Mastermind_(board_game)) where players compete to be the first to crack the code and open a lock box, using hints to guess the correct combination of three digits ranging from 1 to 5.
+WonderMastermind is a modified version of [classic mastermind game](https://en.wikipedia.org/wiki/Mastermind_(board_game)) where players compete to be the first to crack the code and open a lock box, using hints to guess the correct combination of three digits ranging from 1 to 5.
 
 ## How to build
 To compile this Leo program, run:
